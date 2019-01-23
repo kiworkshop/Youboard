@@ -1,10 +1,20 @@
-# wizdeo에서 유투브 채널 순위 top 100을 scrap.
+# wizdeo에서 유투브 채널 순위를 300개(변경될 수 있음) scrap
+# (추후 운영자가 youtuber 100명을 추려낼 수 있도록 더 많은 데이터를 scrap함)
 import requests
 import pathlib
 import time
 from selenium import webdriver
 from datetime import datetime
 
+
+URL_BASE = 'https://analytics.wizdeo.com/en/channels/search?country[in][0]=kr&search=&sort=score'
+URL_ARGS = '&direction=desc&colgroups=classification,statistics,score&limit=50&evolution=_1w'
+NEXT_PATHS = ['//*[@id="content-main"]/div[1]/div[2]/div[3]/div[6]/ul/li[3]/a',
+    '//*[@id="content-main"]/div[1]/div[2]/div[3]/div[6]/ul/li[5]/a',
+    '//*[@id="content-main"]/div[1]/div[2]/div[3]/div[6]/ul/li[6]/a',
+    '//*[@id="content-main"]/div[1]/div[2]/div[3]/div[6]/ul/li[7]/a',
+    '//*[@id="content-main"]/div[1]/div[2]/div[3]/div[6]/ul/li[7]/a'
+    ]
 
 def get_login_info():
     with open("wiz.txt", "r") as f:
@@ -41,23 +51,24 @@ def html_to_object(driver, n):
     }
     return channel
 
+def turn_page(driver, page):
+    element = driver.find_element_by_xpath(NEXT_PATHS[page])
+    element.location_once_scrolled_into_view
+    driver.execute_script("arguments[0].scrollIntoView();", element)
+    element.click()
+
 def channel_scrap():
     driver = webdriver.Chrome('.\\chromedriver.exe')
     user_email, user_pw = get_login_info()
-    url_base = 'https://analytics.wizdeo.com/en/channels/search?country[in][0]=kr&search=&sort=score'
-    url_args = '&direction=desc&colgroups=classification,statistics,score&limit=50&evolution=_1w'
-    url = url_base + url_args
+    url = URL_BASE + URL_ARGS
     initialize_scraper(driver, url)
     login(driver, user_email, user_pw)
-    next_path = '//*[@id="content-main"]/div[1]/div[2]/div[3]/div[6]/ul/li[3]/a'
     channels = []
-    # 페이지당 50개 x 2페이지
-    for page in range(2):
+    # 페이지당 50개 x 6페이지
+    for page in range(6):
         for n in range(1, 51):
             channels.append(html_to_object(driver, n))
-        #페이지 넘김
-        element = driver.find_element_by_xpath(next_path)
-        element.location_once_scrolled_into_view
-        driver.execute_script("arguments[0].scrollIntoView();", element)
-        element.click()
+        if page == 5:
+            break
+        turn_page(driver, page)
     return channels

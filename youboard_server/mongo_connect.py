@@ -11,11 +11,12 @@ mongo = PyMongo(app)
 
 @app.route('/channel-scraper')
 def scrap_channel():
-    channelCollection = mongo.db.channel
+    channel_collection = mongo.db.channel
+    channel_collection.remove({ })
     channels = channel_scraper.channel_scrap()
     for channel in channels:
-        channelCollection.insert(channel)
-    return 'Completed to scrap 100 channels!'
+        channel_collection.insert(channel)
+    return 'Completed to scrap channels!'
 
 if __name__ == '__main__':
     app.run(debug=True)
