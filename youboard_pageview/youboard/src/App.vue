@@ -7,9 +7,7 @@
             <v-icon large color="black">fas fa-share-alt</v-icon>
           </v-flex>
           <v-spacer></v-spacer>
-          <v-flex xs6 sm5>
-            <v-img src="https://github.com/Deocksoo/my-first-blog/blob/master/blog/templates/blog/logo.png?raw=true" alt=""></v-img>
-          </v-flex>
+            <v-img src="https://github.com/Deocksoo/my-first-blog/blob/master/blog/templates/blog/logo.png?raw=true" :width="window.width*0.3"></v-img>
           <v-spacer></v-spacer>
           <v-flex xs1>
             <v-icon large color="black">fas fa-search</v-icon>
@@ -45,7 +43,7 @@
           <v-icon large color="black">fas fa-search</v-icon>
         </v-flex>
       </v-layout>
-      <main-chart></main-chart>
+      <main-chart :window="window"></main-chart>
     </v-layout>
   </v-app>
 </template>
