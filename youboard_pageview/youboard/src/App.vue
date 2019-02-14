@@ -1,13 +1,16 @@
 <template>
   <v-app>
-    <v-layout column wrap>
+    <v-layout column>
+      <v-flex>
       <v-layout v-if="window.width < 960" column wrap>
         <v-layout row wrap align-center justify-center class="mt-3 pl-3 pr-3">
           <v-flex xs1 md1>
             <v-icon large color="black">fas fa-share-alt</v-icon>
           </v-flex>
           <v-spacer></v-spacer>
-            <v-img src="https://github.com/Deocksoo/my-first-blog/blob/master/blog/templates/blog/logo.png?raw=true" :width="window.width*0.3"></v-img>
+          <v-flex shrink>
+            <v-img src="https://github.com/Deocksoo/my-first-blog/blob/master/blog/templates/blog/logo.png?raw=true" :width="window.width*0.4"></v-img>
+          </v-flex>
           <v-spacer></v-spacer>
           <v-flex xs1>
             <v-icon large color="black">fas fa-search</v-icon>
@@ -35,8 +38,10 @@
           <v-icon large color="black">fas fa-search</v-icon>
         </v-flex>
       </v-layout>
-      <component :is="view" :window="window"></component>
-      <!-- <main-chart :window="window"></main-chart> -->
+      </v-flex>
+      <v-flex>
+        <component :is="view" :window="window" :rankData="getRankData"></component>
+      </v-flex>
     </v-layout>
   </v-app>
 </template>
@@ -74,13 +79,34 @@ export default {
           dataKey: "PopularVideo"
         }
       ],
-      activated: "유투버",
-      view: MainChart
+      activated: "채널",
+      view: "",
+      rankData: {
+        channelData: {},
+        youtuberData: {},
+        popularData: {}
+      }
     }
   },
   created() {
     window.addEventListener('resize', this.handleResize)
     this.handleResize();
+  },
+  mounted() {
+    this.$http.get('http://127.0.0.1:5000/channel').then((result) => {
+      let trimmed = result.data.replace(/ObjectId|[()]/gi, "")
+      trimmed = trimmed.split(";")
+      for (let data of trimmed) {
+        let splited = data.replace(/[{]|'}/gi, "").split("', ").map(x => x.split(": "));
+        let temp = {}
+        for (let element of splited) {
+          temp[element[0].slice(1,-1)] = element[1].slice(1,);
+        }
+        this.rankData.channelData[temp["rank"]] = temp;
+      }
+      this.activated = "채널"
+      this.view = "MainChart"
+    })
   },
   destroyed() {
     window.removeEventListener('resize', this.handleResize)
@@ -90,6 +116,19 @@ export default {
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
     }
-  }
+  },
+  computed: {
+    getRankData() {
+      if (this.activated == '채널') {
+        return this.rankData.channelData;
+      }
+      else if (this.activated == '유투버') {
+        return this.rankData.youtuberData;
+      }
+      else if (this.activated == '인기영상') {
+        return this.rankData.popularData;
+      }
+    }
+  },
 }
 </script>
