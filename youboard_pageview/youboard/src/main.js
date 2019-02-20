@@ -4,6 +4,9 @@ import Vuetify from 'vuetify'
 import './plugins/vuetify'
 import '@fortawesome/fontawesome-free/css/all.css'
 import App from './App.vue'
+import axios from "axios";
+
+Vue.prototype.$http = axios;
 
 Vue.config.productionTip = false
 Vue.use(Vuetify, {
