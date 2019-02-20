@@ -94,17 +94,7 @@ export default {
   },
   mounted() {
     this.$http.get('http://127.0.0.1:5000/channel').then((result) => {
-      let trimmed = result.data.replace(/ObjectId|[()]/gi, "")
-      trimmed = trimmed.split(";")
-      for (let data of trimmed) {
-        let splited = data.replace(/[{]|'}/gi, "").split("', ").map(x => x.split(": "));
-        let temp = {}
-        for (let element of splited) {
-          temp[element[0].slice(1,-1)] = element[1].slice(1,);
-        }
-        this.rankData.channelData[temp["rank"]] = temp;
-      }
-      this.activated = "채널"
+      this.rankData.channelData = result.data
       this.view = "MainChart"
     })
   },
