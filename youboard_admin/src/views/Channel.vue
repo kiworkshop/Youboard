@@ -51,14 +51,28 @@
         },
         created () {
             this.fetchList()
+            this.listenUpdateItem()
+            this.listenDeleteItem()
         },
         methods: {
-            fetchList() {
+            fetchList () {
                 this.httpGetRequest(this.url, this.pushList)
+            },
+            listenUpdateItem () {
+                this.$crudEventbus.$on('updateItem', (item) => {
+                    let idx = this.list.findIndex(x => x.rank === item.rank)
+                    this.list.splice(idx, 1, item)
+                })
+            },
+            listenDeleteItem () {
+                this.$crudEventbus.$on('deleteItem', (item) => {
+                    let idx = this.list.findIndex(x => x.rank === item.rank)
+                    this.list.splice(idx, 1)
+                })
             },
             pushList (res) {
                 this.list = res.data
-            }
+            },
         }
     }
 </script>

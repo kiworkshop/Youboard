@@ -39,6 +39,7 @@
         data () {
             return {
                 editMode : false,
+                requestUrl : 'http://localhost:5000/channel-admin',
                 input: {
                     name: "",
                     category : "",
@@ -63,13 +64,19 @@
                 }
             },
             apply () {
-                //httpPutRequest
-                console.log('put')
+                let url = this.requestUrl + '/' + this.data.item.rank
+                this.httpPutRequest(url, this.input, this.updateSuccess)
             },
             cancel () {
                 this.editMode = false
                 this.$crudEventbus.$emit('editModeOff')
             },
+            updateSuccess (res) {
+                this.$snackbarEventbus.$emit('showMessage', '수정되었습니다')
+                this.$crudEventbus.$emit('editModeOff')
+                this.editMode = false
+                this.$crudEventbus.$emit('updateItem', res.data)
+            }
         }
     }
 

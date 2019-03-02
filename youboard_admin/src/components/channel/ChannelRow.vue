@@ -18,6 +18,7 @@
 
     <td class="text-xs-center" v-if="data.item.rank !== null">
       <v-btn icon><v-icon small @click="editModeOn()">edit</v-icon></v-btn>
+      <v-btn icon><v-icon small @click="deleteRow()">delete</v-icon></v-btn>
     </td>
   </tr>
 </template>
@@ -45,7 +46,15 @@
       editModeOn () {
         this.$crudEventbus.$emit('editModeOn', this.data.item)
         this.editMode = true
-      }
+      },
+      deleteRow () {
+        let url = this.requestUrl + '/' + this.data.item.rank
+        this.httpDeleteRequest(url, this.deleteSuccess)
+      },
+      deleteSuccess () {
+        this.$crudEventbus.$emit('deleteItem', this.data.item.rank)
+        this.$snackbarEventbus.$emit('showMessage', '삭제되었습니다')
+      },
     }
   }
 </script>
