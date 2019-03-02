@@ -1,5 +1,5 @@
 <template>
-  <tr class="inputRow" v-if="data.item.id === null || this.editMode === true">
+  <tr class="inputRow" v-if="data.item.rank === null || this.editMode === true">
     <td>
       <v-checkbox
           v-model="data.selected"
@@ -7,11 +7,11 @@
           hide-details
       ></v-checkbox>
     </td>
-    <td class="text-xs"> </td>
-    <td><input v-model="nameInput" type="text"></td>
-    <td><input v-model="nameInput" type="text"></td>
-    <td><input v-model="nameInput" type="text"></td>
-    <td><input v-model="nameInput" type="text"></td>
+    <td class="text-xs">{{ data.item.rank }}</td>
+    <td><input v-model="input.name" type="text"></td>
+    <td><input v-model="input.category" type="text"></td>
+    <td><input v-model="input.subscribers" type="text"></td>
+    <td><input v-model="input.url" type="text"></td>
 
     <td class="justify-center layout px-0">
       <v-btn
@@ -39,9 +39,44 @@
         data () {
             return {
                 editMode : false,
-                nameInput : "",
+                input: {
+                    name: "",
+                    category : "",
+                    subscribers : "",
+                    url: ""
+                },
             }
+        },
+        created () {
+            this.listenEditMode()
+        },
+        methods: {
+            listenEditMode () {
+                this.$crudEventbus.$on('editModeOn', this.pushToInput)
+            },
+            pushToInput (rowData) {
+                if (rowData.rank === this.data.item.rank) {
+                    this.editMode = true
+                    Object.keys(this.input).forEach((key) => {
+                        this.input[key] = rowData[key]
+                    })
+                }
+            },
+            apply () {
+                //httpPutRequest
+                console.log('put')
+            },
+            cancel () {
+                this.editMode = false
+                this.$crudEventbus.$emit('editModeOff')
+            },
         }
     }
 
 </script>
+
+<style>
+    input {
+        border: 1px solid lightgray;
+    }
+</style>

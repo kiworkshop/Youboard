@@ -1,10 +1,10 @@
 <template>
     <v-container fluid grid-list-xs>
         <v-layout row wrap>
-            <v-flex xs10 offset-xs1>
+            <v-flex xs12 offset-xs1>
                 <h3>Channel 관리 page</h3>
             </v-flex>
-            <v-flex xs10>
+            <v-flex xs12>
                 <v-data-table
                     :headers="tableHeader"
                     :items="list"

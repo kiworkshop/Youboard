@@ -33,9 +33,18 @@
         editMode : false,
       }
     },
+    created () {
+      this.listenEditModeOff()
+    },
     methods : {
+      listenEditModeOff () {
+        this.$crudEventbus.$on('editModeOff', () => {
+          this.editMode = false
+        })
+      },
       editModeOn () {
-        
+        this.$crudEventbus.$emit('editModeOn', this.data.item)
+        this.editMode = true
       }
     }
   }
