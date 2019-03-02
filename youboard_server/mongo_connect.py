@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import json
 from flask_pymongo import PyMongo
 import channel_scraper
 import video_scraper
@@ -33,6 +34,22 @@ def scrap_video():
     for video in video_collection.find():
         result.append(video)
     return " ".join(str(x) for x in result)
+
+@app.route('/channel-admin')
+def get_channel_data():
+    channel_collection = mongo.db.channel
+    rank_data = []
+    for channel in channel_collection.find():
+        channel.pop("_id")
+        rank_data.append(channel)
+    response = app.response_class(
+        response=json.dumps(rank_data),
+        status=200,
+        mimetype='application/json'
+    )
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8081'
+    return response
+
 
 if __name__ == '__main__':
     app.run(debug=True)
